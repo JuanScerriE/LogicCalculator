@@ -83,7 +83,7 @@ def lex(logicExpression):
         elif logicChar in "u": yield ("disjunctor", logicChar) # disjunctor ==> (A and (not B)) or ((not B) and A)
         elif logicChar in "->": yield ("subjunctor", completeSubjunctor(logicChar, logicPeekableStream)) # subjunctor ==> (not A) or B
         elif logicChar in "<->": yield ("bi-subjunctor", completeBiSubjunctor(logicChar, logicPeekableStream)) # bi-subjunctor ==> (A and B) or ((not A) and (not B))
-        elif logicChar in "()": yield (logicChar,"")
+        elif logicChar in "()": yield (logicChar, logicChar)
         elif re.match("[1-9]", logicChar): yield ("variable", completeNumber(logicChar, logicPeekableStream, "[1-9]"))
         else: raise Exception("GrammarError")
 
@@ -108,15 +108,16 @@ def lexList(logicExpression):
 
 ##################################################################################################################################
 
-def completeArguement(peekableStream):
-    ret = ["arguement", []]
+def completeArguement(token, peekableStream):
+    ret = ["arguement", [token]]
 
     while peekableStream.currentElem is not None and peekableStream.currentElem[0] != ")":
         if peekableStream.currentElem[0] == "(":
-            peekableStream.nextElem()
-            ret[1].append(completeArguement(peekableStream))
+            ret[1].append(completeArguement(peekableStream.nextElem(), peekableStream))
         else:
             ret[1].append(peekableStream.nextElem())
+
+    ret[1].append(peekableStream.nextElem())
 
     return ret
 
@@ -127,8 +128,7 @@ def parse(tokenTable):
     while peekableTokenTable.currentElem is not None:
         logicToken = peekableTokenTable.nextElem()
 
-        if logicToken[0] == "(": yield (completeArguement(peekableTokenTable))
-        elif logicToken[0] == ")": pass
+        if logicToken[0] == "(": yield (completeArguement(logicToken, peekableTokenTable))
         elif logicToken[0] == "variable": yield logicToken
         elif logicToken[0] == "negator": yield logicToken
         elif logicToken[0] == "conjunctor": yield logicToken
