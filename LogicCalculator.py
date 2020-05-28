@@ -78,7 +78,6 @@ def lex(logicExpression):
 
         if logicChar in " ": pass
         elif logicChar in "¬": yield ("negator", logicChar) # negator ==> (not A)
-        #elif logicChar in "%": yield ("duda", logicChar)# test example by giorgio
         elif logicChar in "^": yield ("conjunctor", logicChar) # conjunctor ==> A and B
         elif logicChar in "v": yield ("adjunctor", logicChar) # adjunctor ==> A or B
         elif logicChar in "u": yield ("disjunctor", logicChar) # disjunctor ==> (A and (not B)) or ((not B) and A)
@@ -109,8 +108,44 @@ def lexList(logicExpression):
 
 ##################################################################################################################################
 
+def completeArguement(peekableStream):
+    ret = ["arguement", []]
+
+    while peekableStream.currentElem is not None and peekableStream.currentElem[0] != ")":
+        if peekableStream.currentElem[0] == "(":
+            peekableStream.nextElem()
+            ret[1].append(completeArguement(peekableStream))
+        else:
+            ret[1].append(peekableStream.nextElem())
+
+    return ret
+
+
+def parse(tokenTable):
+    peekableTokenTable = PeekableStream(tokenTable)
+
+    while peekableTokenTable.currentElem is not None:
+        logicToken = peekableTokenTable.nextElem()
+
+        if logicToken[0] == "(": yield (completeArguement(peekableTokenTable))
+        elif logicToken[0] == ")": pass
+        elif logicToken[0] == "variable": yield logicToken
+        elif logicToken[0] == "negator": yield logicToken
+        elif logicToken[0] == "conjunctor": yield logicToken
+        elif logicToken[0] == "adjunctor": yield logicToken
+        elif logicToken[0] == "disjunctor": yield logicToken
+        elif logicToken[0] == "subjunctor": yield logicToken
+        elif logicToken[0] == "bi-subjunctor": yield logicToken
+        else: raise Exception("SyntaxError")
+
+
+def listParse(tokenTable):
+    parseList = list(parse(tokenTable))
+    return parseList
+
+
 #table = createTable(3)
 #printTable(table)
 
 while True:
-    print(lexList(input()))
+    print(listParse(lexList(input("Enter a logic expression: "))))

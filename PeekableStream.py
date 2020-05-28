@@ -10,7 +10,7 @@ class PeekableStream:
     def nextElem(self):
         ret = self.currentElem
 
-        if self.pos <= len(self.stream):
+        if self.pos < len(self.stream):
             self.pos += 1
 
             try:
