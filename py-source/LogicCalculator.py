@@ -71,7 +71,7 @@ def completeBiSubjunctor(logicChar, peekableStream):
 
 
 def lex(logicExpression):
-    logicPeekableStream = PeekableStream(list(logicExpression))
+    logicPeekableStream = PeekableStream(list(logicExpression)) # String Character
 
     while logicPeekableStream.currentElem is not None:
         logicChar = logicPeekableStream.nextElem()
@@ -88,11 +88,13 @@ def lex(logicExpression):
         elif re.match("[1-9]", logicChar): yield ("variable", completeNumber(logicChar, logicPeekableStream, "[1-9]"))
         else: raise Exception("GrammarError")
 
-
+                #String
 def lexList(logicExpression):
     lexList = list(lex(logicExpression))
 
     number = 1
+
+    # Validation for number ie 1, 2, 3 accepted 1, 2, 4 not accepted
 
     for token in lexList:
         if token[0] == "variable":
@@ -101,7 +103,7 @@ def lexList(logicExpression):
             else:
                 number += 1
 
-    return lexList
+    return lexList # Array of Array of Strings
 
 ##################################################################################################################################
 

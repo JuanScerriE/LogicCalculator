@@ -1,16 +1,19 @@
 class PeekableStream:
 
-    def __init__(self, stream):
-        self.stream = stream
-        self.pos = 0
-        self.posStack = []
-        self.currentElem = self.stream[self.pos]
+    def __init__(self, stream): # Class Constructor
+        # attribute
+        self.stream = stream #this.stream = Strting stream (vis -)
+        self.pos = 0        #this.pos = int (vis -)
+        self.posStack = [] # this.posStack ArrayList (vis -)
+        self.currentElem = self.stream[self.pos] # holds the current char (vis +)
 
 
     def nextElem(self):
+        # Returns currentElem
         ret = self.currentElem
 
-        if self.pos <= len(self.stream):
+        # update the currentElem +1
+        if self.pos < len(self.stream):
             self.pos += 1
 
             try:
