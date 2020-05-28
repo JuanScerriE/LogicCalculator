@@ -5,7 +5,7 @@ from PeekableStream import PeekableStream
 
 ##################################################################################################################################
 
-def createTable(numVars):
+def createTable(numVars): #method araylist<list>
     table = [[0 for y in range(2**numVars)] for x in range(numVars)]
 
     for x in range(1, numVars + 1):
@@ -20,7 +20,7 @@ def createTable(numVars):
     return table
 
 
-def printTable(table):
+def printTable(table): #func to print table
     for y in range(len(table[0])):
         for x in range(len(table)):
             print(str(table[x][y]) + " ", end = '');
@@ -78,6 +78,7 @@ def lex(logicExpression):
 
         if logicChar in " ": pass
         elif logicChar in "¬": yield ("negator", logicChar) # negator ==> (not A)
+        #elif logicChar in "%": yield ("duda", logicChar)# test example by giorgio
         elif logicChar in "^": yield ("conjunctor", logicChar) # conjunctor ==> A and B
         elif logicChar in "v": yield ("adjunctor", logicChar) # adjunctor ==> A or B
         elif logicChar in "u": yield ("disjunctor", logicChar) # disjunctor ==> (A and (not B)) or ((not B) and A)
