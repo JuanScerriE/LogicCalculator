@@ -78,6 +78,7 @@ def lex(logicExpression):
 
         if logicChar in " ": pass
         elif logicChar in "¬": yield ("negator", logicChar) # negator ==> (not A)
+        elif logicChar in "%": yield ("duda", logicChar)
         elif logicChar in "^": yield ("conjunctor", logicChar) # conjunctor ==> A and B
         elif logicChar in "v": yield ("adjunctor", logicChar) # adjunctor ==> A or B
         elif logicChar in "u": yield ("disjunctor", logicChar) # disjunctor ==> (A and (not B)) or ((not B) and A)
