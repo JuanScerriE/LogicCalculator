@@ -124,13 +124,14 @@ def lexList(logicExpression):
 
 ##################################################################################################################################
 
+# Thanks to Giorgio for inspiring me to come up with this specific algorithm 
 
-def completeArguement(token, peekableStream):
-    ret = ["arguement", [token]]
+def completeArgument(token, peekableStream):
+    ret = ["argument", [token]]
 
     while peekableStream.currentElem is not None and peekableStream.currentElem[0] != ")":
         if peekableStream.currentElem[0] == "(":
-            ret[1].append(completeArguement(
+            ret[1].append(completeArgument(
                 peekableStream.nextElem(), peekableStream))
         else:
             ret[1].append(peekableStream.nextElem())
@@ -148,9 +149,9 @@ def parse(tokenTable):
         logicToken = peekableTokenTable.nextElem()
 
         if logicToken[0] == "(":
-            yield (completeArguement(logicToken, peekableTokenTable))
+            yield (completeArgument(logicToken, peekableTokenTable))
         elif logicToken[0] == "negator":
-            yield (completeArguement(logicToken, peekableTokenTable))
+            yield (completeArgument(logicToken, peekableTokenTable))
         elif logicToken[0] == "variable":
             yield logicToken
         elif logicToken[0] == "conjunctor":
@@ -178,13 +179,13 @@ def parseList(tokenTable):
 
 
 combinations= [
-    "arguement",
-    "negatorarguement",
-    "arguementconjunctorarguenment",
-    "arguementadjunctorarguement",
-    "arguementdisjunctorarguement",
-    "arguementsubjunctorarguement",
-    "arguementbi-subjunctorarguement",
+    "argument",
+    "negatorargument",
+    "argumentconjunctorarguenment",
+    "argumentadjunctorargument",
+    "argumentdisjunctorargument",
+    "argumentsubjunctorargument",
+    "argumentbi-subjunctorargument",
     "variable",
     "negatorvariable",
     "variableconjunctorvariable",
@@ -203,8 +204,8 @@ def checkSyntax(parseList):
     while parsePeekableStream.currentElem is not None:
         if parsePeekableStream.currentElem[0] in "()":
             parsePeekableStream.nextElem();
-        elif parsePeekableStream.currentElem[0] == "arguement":
-            combination += "arguement"
+        elif parsePeekableStream.currentElem[0] == "argument":
+            combination += "argument"
             checkSyntax((parsePeekableStream.nextElem())[1])
         else:
             combination += (parsePeekableStream.nextElem())[0]
