@@ -192,7 +192,17 @@ combinations= [
     "variableadjunctorvariable",
     "variabledisjunctorvariable",
     "variablesubjunctorvariable",
-    "variablebi-subjunctorvariable"
+    "variablebi-subjunctorvariable",
+    "variableconjunctorarguenment",
+    "variableadjunctorargument",
+    "variabledisjunctorargument",
+    "variablesubjunctorargument",
+    "variablebi-subjunctorargument",
+    "argumentconjunctorvariable",
+    "argumentadjunctorvariable",
+    "argumentdisjunctorvariable",
+    "argumentsubjunctorvariable",
+    "argumentbi-subjunctorvariable",
 ]
 
 
@@ -210,7 +220,7 @@ def checkSyntax(parseList):
         else:
             combination += (parsePeekableStream.nextElem())[0]
 
-        #print(combination)
+        print(combination)
 
     combinationIncorrect = True
 
@@ -224,22 +234,42 @@ def checkSyntax(parseList):
 
     return parseList
 
-# def convertor(parseList):
-#     parsePeekableStream = PeekableStream(parseList)
-#
-#     while parsePeekableStream.currentElem is not None:
-#         if parsePeekableStream.currentElem[0] == "argument":
-#             parsePeekableStream.pushPos()
-#             parsePeekableStream.nextElem()
-#         elif parsePeekableStream.currentElem[0] == "adjunctor":
-#             parsePeekableStream.
-#         elif parsePeekableStream.currentElem[0] == "conjunctor":
-#         elif parsePeekableStream.currentElem[0] == "disjunctor":
-#         elif parsePeekableStream.currentElem[0] == "subjunctor":
-#         elif parsePeekableStream.currentElem[0] == "bi-subjunctor":
+
+evalString = ""
 
 
+
+def convertor(parseList):
+    global evalString
+    parsePeekableStream = PeekableStream(parseList)
+
+    while parsePeekableStream.currentElem is not None:
+        if parsePeekableStream.currentElem[0] == "argument":
+            convertor(parsePeekableStream.nextElem()[1])
+        elif parsePeekableStream.currentElem[0] == "adjunctor":
+            evalString += " or "
+            parsePeekableStream.nextElem()
+        elif parsePeekableStream.currentElem[0] == "conjunctor":
+            evalString += " and "
+            parsePeekableStream.nextElem()
+        elif parsePeekableStream.currentElem[0] == "disjunctor":
+            pass
+        elif parsePeekableStream.currentElem[0] == "subjunctor":
+            pass
+        elif parsePeekableStream.currentElem[0] == "bi-subjunctor":
+            pass
+        elif parsePeekableStream.currentElem[0] == "negator":
+            evalString += "( not" + convertor(parsePeekableStream.nextElem()[1]) + ")"
+        elif parsePeekableStream.currentElem[0] == "variable":
+            evalString += parsePeekableStream.nextElem()[1]
+        elif parsePeekableStream.currentElem[0] == "(":
+            evalString += parsePeekableStream.nextElem()[1]
+        elif parsePeekableStream.currentElem[0] == ")":
+            evalString += parsePeekableStream.nextElem()[1]
 
 while True:
-    # print(parseList(lexList(input("Enter a logic expression: "))))
+    evalString = ""
+    print(parseList(lexList(input("Enter a logic expression: "))))
     print(checkSyntax(parseList(lexList(input("Enter a logic expression: ")))))
+    convertor(checkSyntax(parseList(lexList(input("Enter a logic expression: ")))))
+    print(evalString)
