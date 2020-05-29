@@ -124,7 +124,7 @@ def lexList(logicExpression):
 
 ##################################################################################################################################
 
-# Thanks to Giorgio for inspiring me to come up with this specific algorithm 
+# Thanks to Giorgio for inspiring me to come up with this specific algorithm
 
 def completeArgument(token, peekableStream):
     ret = ["argument", [token]]
@@ -168,7 +168,7 @@ def parse(tokenTable):
             raise Exception("SyntaxError")
 
 def parseList(tokenTable):
-    parseList= list(parse(tokenTable))
+    parseList = list(parse(tokenTable))
     return parseList
 
 ##################################################################################################################################
@@ -197,9 +197,9 @@ combinations= [
 
 
 def checkSyntax(parseList):
-    parsePeekableStream= PeekableStream(parseList)
+    parsePeekableStream = PeekableStream(parseList)
 
-    combination= ""
+    combination = ""
 
     while parsePeekableStream.currentElem is not None:
         if parsePeekableStream.currentElem[0] in "()":
@@ -223,6 +223,22 @@ def checkSyntax(parseList):
         raise Exception("SyntaxError")
 
     return parseList
+
+# def convertor(parseList):
+#     parsePeekableStream = PeekableStream(parseList)
+#
+#     while parsePeekableStream.currentElem is not None:
+#         if parsePeekableStream.currentElem[0] == "argument":
+#             parsePeekableStream.pushPos()
+#             parsePeekableStream.nextElem()
+#         elif parsePeekableStream.currentElem[0] == "adjunctor":
+#             parsePeekableStream.
+#         elif parsePeekableStream.currentElem[0] == "conjunctor":
+#         elif parsePeekableStream.currentElem[0] == "disjunctor":
+#         elif parsePeekableStream.currentElem[0] == "subjunctor":
+#         elif parsePeekableStream.currentElem[0] == "bi-subjunctor":
+
+
 
 while True:
     # print(parseList(lexList(input("Enter a logic expression: "))))
