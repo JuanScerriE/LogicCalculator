@@ -117,6 +117,9 @@ def lexList(logicExpression):
 
     return lexList
 
+    # for(int i = 0; i < lexList.size(); i++)
+        #lexList[0] = Array
+
 ##################################################################################################################################
 
 # Parser
@@ -131,22 +134,11 @@ def completeArguement(token, peekableStream):
         if peekableStream.currentElem[0] == "(":
             ret[1].append(completeArguement(
                 peekableStream.nextElem(), peekableStream))
-        elif peekableStream.currentElem[0] == "negator":
-            temp = ["arguement", [peekableStream.nextElem()]]
-
-            if peekableStream.currentElem[0] == "(":
-                temp[1].append(
-                    (completeArguement(peekableTokenTable.nextElem(), peekableTokenTable)))
-            elif peekableTokenTable.currentElem[0] == "variable":
-                temp[1].append(["arguement", peekableTokenTable.nextElem()])
-            else:
-                raise Exception("SyntaxError")
-
-            ret[1].append(temp)
         else:
             ret[1].append(peekableStream.nextElem())
 
-    ret[1].append(peekableStream.nextElem())
+    if token[0] != "negator":
+        ret[1].append(peekableStream.nextElem())
 
     return ret
 
@@ -159,15 +151,10 @@ def parse(tokenTable):
 
         if logicToken[0] == "(":
             yield (completeArguement(logicToken, peekableTokenTable))
+        elif logicToken[0] == "negator":
+            yield (completeArguement(logicToken, peekableTokenTable))
         elif logicToken[0] == "variable":
             yield logicToken
-        elif logicToken[0] == "negator":
-            if peekableTokenTable.currentElem[0] == "(":
-                yield ["arguement", [logicToken, (completeArguement(peekableTokenTable.nextElem(), peekableTokenTable))]]
-            elif peekableTokenTable.currentElem[0] == "variable":
-                yield ["arguement", [logicToken, peekableTokenTable.nextElem()]
-            else:
-                raise Exception("SyntaxError")
         elif logicToken[0] == "conjunctor":
             yield logicToken
         elif logicToken[0] == "adjunctor":
@@ -193,13 +180,15 @@ def parseList(tokenTable):
 
 
 combinations= [
-    "arguementnegator",
+    "arguement",
+    "negatorarguement",
     "arguementconjunctorarguenment",
     "arguementadjunctorarguement",
     "arguementdisjunctorarguement",
     "arguementsubjunctorarguement",
     "arguementbi-subjunctorarguement",
-    "variablenegator",
+    "variable",
+    "negatorvariable",
     "variableconjunctorvariable",
     "variableadjunctorvariable",
     "variabledisjunctorvariable",
@@ -214,21 +203,22 @@ def checkSyntax(parseList):
     combination= ""
 
     while parsePeekableStream.currentElem is not None:
-        if parsePeekableStream.currentElem[0] in "(":
-            parsePeekableStream.nextElem()
-        elif parsePeekableStream.currentElem[0] in ")":
-            parsePeekableStream.nextElem()
+        if parsePeekableStream.currentElem[0] in "()":
+            parsePeekableStream.nextElem();
         elif parsePeekableStream.currentElem[0] == "arguement":
             combination += "arguement"
             checkSyntax((parsePeekableStream.nextElem())[1])
         else:
             combination += (parsePeekableStream.nextElem())[0]
 
-    combinationIncorrect= True
+        #print(combination)
+
+    combinationIncorrect = True
 
     for properCombination in combinations:
+        #print("For " + properCombination)
         if properCombination == combination:
-            combinationIncorrect= False
+            combinationIncorrect = False
 
     if combinationIncorrect:
         raise Exception("SyntaxError")
@@ -236,5 +226,5 @@ def checkSyntax(parseList):
     return parseList
 
 while True:
-    print(lexList(input("Enter a logic expression: ")))
+    # print(parseList(lexList(input("Enter a logic expression: "))))
     print(checkSyntax(parseList(lexList(input("Enter a logic expression: ")))))
