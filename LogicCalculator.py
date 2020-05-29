@@ -35,6 +35,7 @@ def printTable(table):  # func to print table
 
 ##################################################################################################################################
 
+
 def completeNumber(logicChar, peekableStream, allowed):
     ret = logicChar
 
@@ -130,6 +131,18 @@ def completeArguement(token, peekableStream):
         if peekableStream.currentElem[0] == "(":
             ret[1].append(completeArguement(
                 peekableStream.nextElem(), peekableStream))
+        elif peekableStream.currentElem[0] == "negator":
+            temp = ["arguement", [peekableStream.nextElem()]]
+
+            if peekableStream.currentElem[0] == "(":
+                temp[1].append(
+                    (completeArguement(peekableTokenTable.nextElem(), peekableTokenTable)))
+            elif peekableTokenTable.currentElem[0] == "variable":
+                temp[1].append(["arguement", peekableTokenTable.nextElem()])
+            else:
+                raise Exception("SyntaxError")
+
+            ret[1].append(temp)
         else:
             ret[1].append(peekableStream.nextElem())
 
@@ -149,7 +162,12 @@ def parse(tokenTable):
         elif logicToken[0] == "variable":
             yield logicToken
         elif logicToken[0] == "negator":
-            yield logicToken
+            if peekableTokenTable.currentElem[0] == "(":
+                yield ["arguement", [logicToken, (completeArguement(peekableTokenTable.nextElem(), peekableTokenTable))]]
+            elif peekableTokenTable.currentElem[0] == "variable":
+                yield ["arguement", [logicToken, peekableTokenTable.nextElem()]
+            else:
+                raise Exception("SyntaxError")
         elif logicToken[0] == "conjunctor":
             yield logicToken
         elif logicToken[0] == "adjunctor":
@@ -163,9 +181,8 @@ def parse(tokenTable):
         else:
             raise Exception("SyntaxError")
 
-
-def listParse(tokenTable):
-    parseList = list(parse(tokenTable))
+def parseList(tokenTable):
+    parseList= list(parse(tokenTable))
     return parseList
 
 ##################################################################################################################################
@@ -175,5 +192,49 @@ def listParse(tokenTable):
 ##################################################################################################################################
 
 
+combinations= [
+    "arguementnegator",
+    "arguementconjunctorarguenment",
+    "arguementadjunctorarguement",
+    "arguementdisjunctorarguement",
+    "arguementsubjunctorarguement",
+    "arguementbi-subjunctorarguement",
+    "variablenegator",
+    "variableconjunctorvariable",
+    "variableadjunctorvariable",
+    "variabledisjunctorvariable",
+    "variablesubjunctorvariable",
+    "variablebi-subjunctorvariable"
+]
+
+
+def checkSyntax(parseList):
+    parsePeekableStream= PeekableStream(parseList)
+
+    combination= ""
+
+    while parsePeekableStream.currentElem is not None:
+        if parsePeekableStream.currentElem[0] in "(":
+            parsePeekableStream.nextElem()
+        elif parsePeekableStream.currentElem[0] in ")":
+            parsePeekableStream.nextElem()
+        elif parsePeekableStream.currentElem[0] == "arguement":
+            combination += "arguement"
+            checkSyntax((parsePeekableStream.nextElem())[1])
+        else:
+            combination += (parsePeekableStream.nextElem())[0]
+
+    combinationIncorrect= True
+
+    for properCombination in combinations:
+        if properCombination == combination:
+            combinationIncorrect= False
+
+    if combinationIncorrect:
+        raise Exception("SyntaxError")
+
+    return parseList
+
 while True:
-    print(listParse(lexList(input("Enter a logic expression: "))))
+    print(lexList(input("Enter a logic expression: ")))
+    print(checkSyntax(parseList(lexList(input("Enter a logic expression: ")))))
